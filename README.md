@@ -1,6 +1,6 @@
 # HumanAgent
 
-> 基于 Spring Boot + AI Agent 的智能问答与运维系统
+> 基于 Spring Boot + AI Agent 的智能问答与多Agents协作系统
 
 ## 📖 项目简介
 
