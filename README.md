@@ -1,4 +1,4 @@
-# SuperBizAgent
+# HumanAgent
 
 > 基于 Spring Boot + AI Agent 的智能问答与运维系统
 
@@ -9,14 +9,14 @@
 ### 1. RAG 智能问答
 集成 Milvus 向量数据库和阿里云 DashScope，提供基于检索增强生成的智能问答能力，支持多轮对话和流式输出。
 
-### 2. AIOps 智能运维
-基于 AI Agent 的自动化运维系统，采用 Planner-Executor-Replanner 架构，实现告警分析、日志查询、智能诊断和报告生成。
+### 2. AIOps 智能分身
+基于 AI Agent 的智能分身系统，采用 Planner-Executor-Replanner 架构，能够对提问进行任务拆解，实现代码分析、BUG 查找、日志查询、智能诊断和报告生成。
 
 ## 🚀 核心特性
 
 - ✅ **RAG 问答**: 向量检索 + 多轮对话 + 流式输出
-- ✅ **AIOps 运维**: 智能诊断 + 多 Agent 协作 + 自动报告
-- ✅ **工具集成**: 文档检索、告警查询、日志分析、时间工具
+- ✅ **AIOps 分身**: 任务拆解 + 代码分析 + BUG 查找 + 智能诊断 + 自动报告
+- ✅ **工具集成**: 文档检索、代码分析、BUG 查找、日志查询、时间工具
 - ✅ **会话管理**: 上下文维护、历史管理、自动清理
 - ✅ **Web 界面**: 提供测试界面和 RESTful API
 
@@ -34,19 +34,19 @@
 ## 📦 核心模块
 
 ```
-SuperBizAgent/
+HumanAgent/
 ├── src/main/java/org/example/
 │   ├── controller/
 │   │   └── ChatController.java        # 统一接口控制器 ⭐
 │   ├── service/
 │   │   ├── ChatService.java           # 对话服务 ⭐
-│   │   ├── AiOpsService.java          # AIOps 服务 ⭐
+│   │   ├── AiOpsService.java          # AIOps 智能分身服务 ⭐
 │   │   ├── RagService.java            # RAG 服务
 │   │   └── Vector*.java               # 向量服务
 │   ├── agent/tool/                    # Agent 工具集
 │   │   ├── DateTimeTools.java         # 时间工具
 │   │   ├── InternalDocsTools.java     # 文档检索
-│   │   ├── QueryMetricsTools.java     # 告警查询
+│   │   ├── QueryMetricsTools.java     # 代码分析 / BUG 查找
 │   │   └── QueryLogsTools.java        # 日志查询
 │   └── config/                        # 配置类
 ├── src/main/resources/
@@ -84,12 +84,12 @@ Content-Type: application/json
 ```
 一次性返回完整结果，支持工具调用和多轮对话。
 
-### 2. AIOps 智能运维接口
+### 2. AIOps 智能分身接口
 
 ```bash
 POST /api/ai_ops
 ```
-自动执行告警分析流程，生成运维报告（SSE 流式输出）。
+基于 Planner-Executor-Replanner 架构，对提问进行任务拆解，自动执行代码分析、BUG 查找、日志查询与智能诊断，并生成报告（SSE 流式输出）。
 
 ### 3. 会话管理
 
