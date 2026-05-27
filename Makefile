@@ -2,7 +2,7 @@
 # 用于自动化项目初始化和文档向量化
 
 # 配置变量
-SERVER_URL = http://localhost:9900
+SERVER_URL = https://localhost:9443
 UPLOAD_API = $(SERVER_URL)/api/upload
 DOCS_DIR = aiops-docs
 HEALTH_CHECK_API = $(SERVER_URL)/milvus/health
@@ -67,7 +67,7 @@ init:
 # 启动 Spring Boot 服务（后台运行）
 start:
 	@echo "$(YELLOW)🚀 启动 Spring Boot 服务...$(NC)"
-	@if curl -s -f $(HEALTH_CHECK_API) > /dev/null 2>&1; then \
+	@if curl -k -s -f $(HEALTH_CHECK_API) > /dev/null 2>&1; then \
 		echo "$(GREEN)✅ 服务已经在运行中 ($(SERVER_URL))$(NC)"; \
 	else \
 		echo "$(YELLOW)📦 正在启动服务（后台运行）...$(NC)"; \
@@ -84,7 +84,7 @@ wait:
 	@max_attempts=60; \
 	attempt=0; \
 	while [ $$attempt -lt $$max_attempts ]; do \
-		if curl -s -f $(HEALTH_CHECK_API) > /dev/null 2>&1; then \
+		if curl -k -s -f $(HEALTH_CHECK_API) > /dev/null 2>&1; then \
 			echo "$(GREEN)✅ 服务器已就绪！($(SERVER_URL))$(NC)"; \
 			exit 0; \
 		fi; \
@@ -100,7 +100,7 @@ wait:
 # 检查服务器是否运行
 check:
 	@echo "$(YELLOW)🔍 检查服务器状态...$(NC)"
-	@if curl -s -f $(HEALTH_CHECK_API) > /dev/null 2>&1; then \
+	@if curl -k -s -f $(HEALTH_CHECK_API) > /dev/null 2>&1; then \
 		echo "$(GREEN)✅ 服务器运行正常 ($(SERVER_URL))$(NC)"; \
 	else \
 		echo "$(RED)❌ 服务器未运行或无法连接！$(NC)"; \
@@ -123,7 +123,7 @@ upload:
 			count=$$((count + 1)); \
 			filename=$$(basename "$$file"); \
 			echo "$(YELLOW)  [$$count] 上传文件: $$filename$(NC)"; \
-			response=$$(curl -s -w "\n%{http_code}" -X POST $(UPLOAD_API) \
+			response=$$(curl -k -s -w "\n%{http_code}" -X POST $(UPLOAD_API) \
 				-F "file=@$$file" \
 				-H "Accept: application/json"); \
 			http_code=$$(echo "$$response" | tail -n1); \
@@ -215,6 +215,16 @@ up:
 	@if docker ps --format '{{.Names}}' | grep -q "^$(MILVUS_CONTAINER)$$"; then \
 		echo "$(GREEN)✅ Milvus 容器已经在运行中$(NC)"; \
 		echo "$(YELLOW)📋 当前运行的容器:$(NC)"; \
+		docker ps --filter "name=milvus" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"; \
+	elif docker ps -a --format '{{.Names}}' | grep -qE "^(milvus-etcd|milvus-minio|milvus-standalone|milvus-attu)$$"; then \
+		echo "$(YELLOW)🔄 检测到已存在但已停止的 Milvus 容器，直接启动...$(NC)"; \
+		for c in milvus-etcd milvus-minio milvus-standalone milvus-attu; do \
+			if docker ps -a --format '{{.Names}}' | grep -q "^$$c$$"; then \
+				docker start $$c > /dev/null && echo "$(GREEN)  ✅ $$c 已启动$(NC)" || echo "$(RED)  ❌ $$c 启动失败$(NC)"; \
+			fi; \
+		done; \
+		echo ""; \
+		echo "$(GREEN)📋 运行中的容器:$(NC)"; \
 		docker ps --filter "name=milvus" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"; \
 	else \
 		echo "$(YELLOW)🚀 启动 Docker Compose...$(NC)"; \

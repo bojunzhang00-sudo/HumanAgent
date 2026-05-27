@@ -1,10 +1,18 @@
 server:
-  port: 9900
+  port: 9443          # 主端口：HTTPS
+  http:
+    port: 9900        # 附加端口：HTTP（由 TomcatHttpConnectorConfig 启用）
   servlet:
     encoding:
       charset: UTF-8
       enabled: true
       force: true
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-type: PKCS12
+    key-store-password: ${KEYSTORE_PASSWORD:changeit}
+    key-alias: superbiz
 
 file:
   upload:
@@ -23,7 +31,7 @@ milvus:
 spring:
   ai:
     dashscope:
-      api-key: sk-xxx  # 从环境变量读取或使用默认值
+      api-key: ${DASHSCOPE_API_KEY}
       chat:
         options:
           timeout: 180000  # 超时时间180秒（3分钟）
@@ -52,7 +60,7 @@ spring:
 # 阿里云 DashScope Embedding API 配置
 dashscope:
   api:
-    key: sk-xxx  # 从环境变量读取或使用默认值（用于自定义配置）
+    key: ${DASHSCOPE_API_KEY}
   embedding:
     model: text-embedding-v4  # 阿里云文本向量化模型
 

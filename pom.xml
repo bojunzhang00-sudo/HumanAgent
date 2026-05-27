@@ -154,6 +154,9 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>org.example.Main</mainClass>
+                    <!-- 让 mvn spring-boot:run 直接读取 src/main/resources 下的资源，
+                         配合 spring-boot-devtools 实现「保存即生效」的静态资源热更新 -->
+                    <addResources>true</addResources>
                 </configuration>
             </plugin>
             
